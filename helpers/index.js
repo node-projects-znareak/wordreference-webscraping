@@ -1,7 +1,11 @@
+const chalk = require("chalk");
 const Spinner = require("cli-spinner").Spinner;
 const axios = require("axios").default;
-
 const API_URL = "https://www.wordreference.com/es/translation.asp?tranword=";
+
+const error = (msj) => {
+  console.error(chalk.red.bold(`❌ ${msj}.`));
+};
 
 const spinner = () => {
   const _spinner = new Spinner("Searching... %s");
@@ -25,17 +29,62 @@ const removeTooltip = (domNode) => {
   return domNode?.textContent?.trim();
 };
 
+const getWordType = (word) => {
+  const type = getTooltipTitle(word?.querySelector("td.FrWrd"));
+  return type;
+};
+
 const filterWordsByType = (tableRows, wordType) => {
-  return tableRows?.filter((row) => {
-    const isPreposition = getTooltipTitle(row?.querySelector("td.FrWrd"));
-    return isPreposition === wordType;
-  });
+  return tableRows?.filter((row) => getWordType(row) === wordType);
+};
+
+const formatTranslateWord = (word) => {
+  const translatedWord = removeTooltip(word?.querySelector("td.ToWrd"));
+  const contextWord = word.querySelector("td:nth-child(2)")?.textContent;
+  return {
+    translate: translatedWord,
+    use: contextWord,
+  };
+};
+
+const showTable = (title, data) => {
+  if (data?.length) {
+    console.log("\n" + chalk.cyanBright.bold(title));
+    console.table(data);
+  }
+};
+
+const showTranslationsTable = (tableRows) => {
+  const prepositionWords = filterWordsByType(tableRows, "prep");
+  const conjuntionWords = filterWordsByType(tableRows, "conj");
+  const adverbWords = filterWordsByType(tableRows, "adv");
+
+  const prepArray = [];
+  const conjArray = [];
+  const advArray = [];
+
+  for (const word of prepositionWords) {
+    prepArray.push(formatTranslateWord(word));
+  }
+
+  for (const word of conjuntionWords) {
+    conjArray.push(formatTranslateWord(word));
+  }
+
+  for (const word of adverbWords) {
+    advArray.push(formatTranslateWord(word));
+  }
+  showTable("Prepositions", prepArray);
+  showTable("Conjuntions", conjArray);
+  showTable("Adverbs", advArray);
 };
 
 module.exports = {
+  error,
   spinner: spinner(),
   fetchWord,
   getTooltipTitle,
   removeTooltip,
   filterWordsByType,
+  showTranslationsTable,
 };
