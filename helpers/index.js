@@ -20,12 +20,14 @@ const fetchWord = async (word) => {
 
 const getTooltipTitle = (domNode) => {
   const tooltip = domNode?.querySelector("em.tooltip");
+  tooltip?.querySelector("a")?.remove();
   tooltip?.querySelector("span")?.remove(); // this is the tooltip description
   return tooltip?.textContent;
 };
 
 const removeTooltip = (domNode) => {
-  domNode?.querySelector("em.tooltip")?.remove();
+  domNode?.querySelector("em")?.remove();
+  domNode?.querySelector("a")?.remove();
   return domNode?.textContent?.trim();
 };
 
@@ -68,10 +70,16 @@ const showTranslationsTable = (tableRows) => {
   const prepositionWords = filterWordsByType(tableRows, "prep");
   const conjuntionWords = filterWordsByType(tableRows, "conj");
   const adverbWords = filterWordsByType(tableRows, "adv");
-  
+  const expressions = filterWordsByType(tableRows, "v expr");
+  const nouns = filterWordsByType(tableRows, "n");
+  const verbPhrasal = filterWordsByType(tableRows, "vtr phrasal sep");
+
+  showTranslationTable("Nouns", nouns);
+  showTranslationTable("Verb, Transitive Phrasal Sep", verbPhrasal);
   showTranslationTable("Prepositions", prepositionWords);
   showTranslationTable("Conjuntions", conjuntionWords);
   showTranslationTable("Adverbs", adverbWords);
+  showTranslationTable("Verbal Expressions", expressions);
 };
 
 module.exports = {
