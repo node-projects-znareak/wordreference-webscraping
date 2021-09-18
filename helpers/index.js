@@ -8,7 +8,7 @@ const error = (msj) => {
 };
 
 const spinner = () => {
-  const _spinner = new Spinner("Searching... %s");
+  const _spinner = new Spinner("Searching... %s ");
   _spinner.setSpinnerString("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏");
   return _spinner;
 };
@@ -40,7 +40,9 @@ const filterWordsByType = (tableRows, wordType) => {
 
 const formatTranslateWord = (word) => {
   const translatedWord = removeTooltip(word?.querySelector("td.ToWrd"));
-  const contextWord = word.querySelector("td:nth-child(2)")?.textContent;
+  const contextWord = word
+    .querySelector("td:nth-child(2)")
+    ?.textContent?.trim();
   return {
     translate: translatedWord,
     use: contextWord,
@@ -54,29 +56,22 @@ const showTable = (title, data) => {
   }
 };
 
+const showTranslationTable = (title, words) => {
+  const result = [];
+  for (const word of words) {
+    result.push(formatTranslateWord(word));
+  }
+  showTable(title, result);
+};
+
 const showTranslationsTable = (tableRows) => {
   const prepositionWords = filterWordsByType(tableRows, "prep");
   const conjuntionWords = filterWordsByType(tableRows, "conj");
   const adverbWords = filterWordsByType(tableRows, "adv");
-
-  const prepArray = [];
-  const conjArray = [];
-  const advArray = [];
-
-  for (const word of prepositionWords) {
-    prepArray.push(formatTranslateWord(word));
-  }
-
-  for (const word of conjuntionWords) {
-    conjArray.push(formatTranslateWord(word));
-  }
-
-  for (const word of adverbWords) {
-    advArray.push(formatTranslateWord(word));
-  }
-  showTable("Prepositions", prepArray);
-  showTable("Conjuntions", conjArray);
-  showTable("Adverbs", advArray);
+  
+  showTranslationTable("Prepositions", prepositionWords);
+  showTranslationTable("Conjuntions", conjuntionWords);
+  showTranslationTable("Adverbs", adverbWords);
 };
 
 module.exports = {
