@@ -1,5 +1,6 @@
 const { PORT } = require("./variables");
 const { message } = require("../helpers/utils");
+const { welcome } = require("../helpers/");
 const wrapServerErrors = require("../middlewares");
 
 async function startServer(app, routers) {
@@ -15,6 +16,7 @@ async function startServer(app, routers) {
 
     const server = app.listen(PORT, async () => {
       message.success(`Server has started in http://localhost:${PORT}/`);
+      welcome();
       process.on("SIGINT", () => server.close());
       process.on("SIGTERM", () => server.close());
     });

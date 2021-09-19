@@ -10,7 +10,6 @@ const error = (msj) => {
 
 const welcome = (word) => {
   const LINES = 100;
-  console.clear();
   console.log(
     chalk.yellow(
       figlet.textSync("WordReference", {
@@ -25,7 +24,7 @@ const welcome = (word) => {
   );
 
   console.log("-".repeat(LINES), "\n");
-  console.log(`\tWORD TO TRANSLATE: ${word}\n`);
+  // console.log(`\tWORD TO TRANSLATE: ${word}\n`);
 };
 
 const spinner = () => {

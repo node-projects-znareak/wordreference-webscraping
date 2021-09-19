@@ -4,6 +4,7 @@
   "description": "wordrefenrece translation api",
   "main": "index.js",
   "dependencies": {
+    "@hapi/boom": "^9.1.4",
     "asciify-image": "^0.1.8",
     "axios": "^0.21.4",
     "chalk": "^4.1.2",
@@ -16,7 +17,8 @@
     "hpp": "^0.2.3",
     "jsdom": "^17.0.0",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.12",
+    "yup": "^0.32.9"
   },
   "devDependencies": {},
   "scripts": {
