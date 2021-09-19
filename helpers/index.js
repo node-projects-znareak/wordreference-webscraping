@@ -1,10 +1,31 @@
 const chalk = require("chalk");
+const figlet = require("figlet");
 const Spinner = require("cli-spinner").Spinner;
 const axios = require("axios").default;
 const API_URL = "https://www.wordreference.com/es/translation.asp?tranword=";
 
 const error = (msj) => {
   console.error(chalk.red.bold(`❌ ${msj}.`));
+};
+
+const welcome = (word) => {
+  const LINES = 100;
+  console.clear();
+  console.log(
+    chalk.yellow(
+      figlet.textSync("WordReference", {
+        horizontalLayout: "full",
+      })
+    )
+  );
+  console.log("-".repeat(LINES));
+  console.log(
+    "|\t\t\tWeb Scraping API for word referecen page.",
+    " ".repeat(33) + "|"
+  );
+
+  console.log("-".repeat(LINES), "\n");
+  console.log(`\tWORD TO TRANSLATE: ${word}\n`);
 };
 
 const spinner = () => {
@@ -84,6 +105,7 @@ const showTranslationsTable = (tableRows) => {
 
 module.exports = {
   error,
+  welcome,
   spinner: spinner(),
   fetchWord,
   getTooltipTitle,

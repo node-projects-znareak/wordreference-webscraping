@@ -1,9 +1,8 @@
-const chalk = require("chalk");
-const figlet = require("figlet");
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const {
   error,
+  welcome,
   spinner,
   fetchWord,
   showTranslationsTable,
@@ -25,22 +24,8 @@ const main = async () => {
     const tableRows = [
       ...table.querySelectorAll("tr.even, table.WRD tbody tr.odd"),
     ];
-    console.clear();
-    console.log(
-      chalk.yellow(
-        figlet.textSync("WordReference", {
-          horizontalLayout: "full",
-        })
-      )
-    );
-    console.log("-".repeat(100));
-    console.log(
-      "|\t\t\tWeb Scraping API for word referecen page.",
-      " ".repeat(33) + "|"
-    );
 
-    console.log("-".repeat(100), "\n");
-    console.log(`\tWORD TO TRANSLATE: ${word}\n`);
+    welcome(word);
 
     showTranslationsTable(tableRows);
   } catch (err) {
