@@ -86,6 +86,14 @@ const showTranslationTable = (title, words) => {
   showTable(title, result);
 };
 
+const formatWords = (words) => {
+  const result = [];
+  for (const word of words) {
+    result.push(formatTranslateWord(word));
+  }
+  return result;
+};
+
 const showTranslationsTable = (tableRows) => {
   const prepositionWords = filterWordsByType(tableRows, "prep");
   const conjuntionWords = filterWordsByType(tableRows, "conj");
@@ -102,6 +110,25 @@ const showTranslationsTable = (tableRows) => {
   showTranslationTable("Verbal Expressions", expressions);
 };
 
+const getTranslationsWords = (tableRows) => {
+  const prepositionWords = formatWords(filterWordsByType(tableRows, "prep"));
+  const conjuntionWords = formatWords(filterWordsByType(tableRows, "conj"));
+  const adverbWords = formatWords(filterWordsByType(tableRows, "adv"));
+  const expressions = formatWords(filterWordsByType(tableRows, "v expr"));
+  const nouns = formatWords(filterWordsByType(tableRows, "n"));
+  const verbPhrasal = formatWords(
+    filterWordsByType(tableRows, "vtr phrasal sep")
+  );
+  return {
+    nouns,
+    verbPhrasal,
+    prepositions: prepositionWords,
+    conjuntion: conjuntionWords,
+    adverb: adverbWords,
+    expressions,
+  };
+};
+
 module.exports = {
   error,
   welcome,
@@ -111,4 +138,5 @@ module.exports = {
   removeTooltip,
   filterWordsByType,
   showTranslationsTable,
+  getTranslationsWords,
 };

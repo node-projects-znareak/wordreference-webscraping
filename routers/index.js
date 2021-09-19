@@ -1,7 +1,11 @@
 const express = require("express");
-const { success } = require("../helpers/httpResponses");
+const jsdom = require("jsdom");
 const yup = require("yup");
+const { success } = require("../helpers/httpResponses");
 const validate = require("../helpers/validations/validate");
+const { fetchWord, getTranslationsWords } = require("../helpers");
+const { JSDOM } = jsdom;
+
 const router = express.Router();
 
 const schemaWord = yup.object({
@@ -13,10 +17,15 @@ const schemaWord = yup.object({
   }),
 });
 
-router.get("/translate", validate(schemaWord), (req, res) => {
+router.get("/translate", validate(schemaWord), async (req, res) => {
   const word = req.query.word;
-
-  success(res, word);
+  const html = await fetchWord(word);
+  const dom = new JSDOM(html);
+  const table = dom.window.document.querySelector("table.WRD tbody");
+  const tableRows = [
+    ...table.querySelectorAll("tr.even, table.WRD tbody tr.odd"),
+  ];
+  success(res, getTranslationsWords(tableRows));
 });
 
 module.exports = router;
