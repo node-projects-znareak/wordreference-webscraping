@@ -22,9 +22,9 @@ const main = async () => {
     const dom = new JSDOM(html);
     const table = dom.window.document.querySelector("table.WRD tbody");
     const tableRows = [
-      ...table.querySelectorAll("tr.even, table.WRD tbody tr.odd"),
+      ...table.querySelectorAll("tr.even[id], tr.odd[id]"),
     ];
-    
+
     console.clear();
     welcome(word);
 

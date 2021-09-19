@@ -25,7 +25,7 @@ const welcome = (word) => {
   );
 
   console.log("-".repeat(LINES), "\n");
-  console.log(`\tWORD TO TRANSLATE: ${word}\n`);
+  console.log(`\tPrincipal translations for: ${word}\n`);
 };
 
 const spinner = () => {
@@ -58,7 +58,8 @@ const getWordType = (word) => {
 };
 
 const filterWordsByType = (tableRows, wordType) => {
-  return tableRows?.filter((row) => getWordType(row) === wordType);
+  const tableRow = tableRows?.filter((row) => getWordType(row) === wordType);
+  return tableRow
 };
 
 const formatTranslateWord = (word) => {
@@ -91,6 +92,7 @@ const showTranslationsTable = (tableRows) => {
   const prepositionWords = filterWordsByType(tableRows, "prep");
   const conjuntionWords = filterWordsByType(tableRows, "conj");
   const adverbWords = filterWordsByType(tableRows, "adv");
+  const adjetiveWords = filterWordsByType(tableRows, "adj");
   const expressions = filterWordsByType(tableRows, "v expr");
   const nouns = filterWordsByType(tableRows, "n");
   const verbPhrasal = filterWordsByType(tableRows, "vtr phrasal sep");
@@ -98,6 +100,7 @@ const showTranslationsTable = (tableRows) => {
   showTranslationTable("Nouns", nouns);
   showTranslationTable("Verb, Transitive Phrasal Sep", verbPhrasal);
   showTranslationTable("Prepositions", prepositionWords);
+  showTranslationTable("Adjetives", adjetiveWords);
   showTranslationTable("Conjuntions", conjuntionWords);
   showTranslationTable("Adverbs", adverbWords);
   showTranslationTable("Verbal Expressions", expressions);
