@@ -25,7 +25,9 @@ router.get("/translate", validate(schemaWord), async (req, res) => {
   const tableRows = [
     ...table.querySelectorAll("tr.even, table.WRD tbody tr.odd"),
   ];
-  success(res, getTranslationsWords(tableRows));
+  success(res, {
+    message: ":D",
+  });
 });
 
 module.exports = router;
