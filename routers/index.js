@@ -19,7 +19,7 @@ const schemaWord = yup.object({
 
 router.get("/translate", validate(schemaWord), async (req, res) => {
   const word = req.query.word;
-  // const html = await fetchWord(word);
+  const html = await fetchWord(word);
   // const dom = new JSDOM(html);
   // const table = dom.window.document.querySelector("table.WRD tbody");
   // const tableRows = [
