@@ -19,12 +19,12 @@ const schemaWord = yup.object({
 
 router.get("/translate", validate(schemaWord), async (req, res) => {
   const word = req.query.word;
-  const html = await fetchWord(word);
-  const dom = new JSDOM(html);
-  const table = dom.window.document.querySelector("table.WRD tbody");
-  const tableRows = [
-    ...table.querySelectorAll("tr.even, table.WRD tbody tr.odd"),
-  ];
+  // const html = await fetchWord(word);
+  // const dom = new JSDOM(html);
+  // const table = dom.window.document.querySelector("table.WRD tbody");
+  // const tableRows = [
+  //   ...table.querySelectorAll("tr.even, table.WRD tbody tr.odd"),
+  // ];
   success(res, {
     message: ":D",
   });
