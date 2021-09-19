@@ -116,17 +116,18 @@ const getTranslationsWords = (tableRows) => {
   const adverbWords = formatWords(filterWordsByType(tableRows, "adv"));
   const expressions = formatWords(filterWordsByType(tableRows, "v expr"));
   const nouns = formatWords(filterWordsByType(tableRows, "n"));
+  const json = {};
   const verbPhrasal = formatWords(
     filterWordsByType(tableRows, "vtr phrasal sep")
   );
-  return {
-    nouns,
-    verbPhrasal,
-    prepositions: prepositionWords,
-    conjuntion: conjuntionWords,
-    adverb: adverbWords,
-    expressions,
-  };
+  if (nouns.length) json.nouns = nouns;
+  if (verbPhrasal.length) json.verbPhrasal = verbPhrasal;
+  if (prepositionWords.length) json.prepositions = prepositionWords;
+  if (conjuntionWords.length) json.conjuntion = conjuntionWords;
+  if (adverbWords.length) json.adverb = adverbWords;
+  if (expressions.length) json.expressions = expressions;
+
+  return json;
 };
 
 module.exports = {
