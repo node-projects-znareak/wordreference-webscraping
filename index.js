@@ -21,5 +21,4 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(hpp());
 app.use(rateLimit(API.RATE_LIMITS));
-app.use("/api", routers);
 startServer(app, routers);

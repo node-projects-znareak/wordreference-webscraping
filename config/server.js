@@ -6,7 +6,7 @@ const wrapServerErrors = require("../middlewares");
 async function startServer(app, routers) {
   try {
     console.clear();
-   
+    app.use("/api", routers);
     app.use((req, res, next) => {
       res.status(404).json({ status: 404, body: "Not Found" });
       next();
