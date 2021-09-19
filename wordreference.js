@@ -15,7 +15,7 @@ if (!word) {
 }
 
 const main = async () => {
-  console.clear();
+ 
   spinner.start();
   try {
     const html = await fetchWord(word);
@@ -24,7 +24,8 @@ const main = async () => {
     const tableRows = [
       ...table.querySelectorAll("tr.even, table.WRD tbody tr.odd"),
     ];
-
+    
+    console.clear();
     welcome(word);
 
     showTranslationsTable(tableRows);

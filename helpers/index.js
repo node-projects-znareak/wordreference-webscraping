@@ -10,6 +10,7 @@ const error = (msj) => {
 
 const welcome = (word) => {
   const LINES = 100;
+
   console.log(
     chalk.yellow(
       figlet.textSync("WordReference", {
@@ -24,7 +25,7 @@ const welcome = (word) => {
   );
 
   console.log("-".repeat(LINES), "\n");
-  // console.log(`\tWORD TO TRANSLATE: ${word}\n`);
+  console.log(`\tWORD TO TRANSLATE: ${word}\n`);
 };
 
 const spinner = () => {
@@ -86,14 +87,6 @@ const showTranslationTable = (title, words) => {
   showTable(title, result);
 };
 
-const formatWords = (words) => {
-  const result = [];
-  for (const word of words) {
-    result.push(formatTranslateWord(word));
-  }
-  return result;
-};
-
 const showTranslationsTable = (tableRows) => {
   const prepositionWords = filterWordsByType(tableRows, "prep");
   const conjuntionWords = filterWordsByType(tableRows, "conj");
@@ -110,26 +103,6 @@ const showTranslationsTable = (tableRows) => {
   showTranslationTable("Verbal Expressions", expressions);
 };
 
-const getTranslationsWords = (tableRows) => {
-  const prepositionWords = formatWords(filterWordsByType(tableRows, "prep"));
-  const conjuntionWords = formatWords(filterWordsByType(tableRows, "conj"));
-  const adverbWords = formatWords(filterWordsByType(tableRows, "adv"));
-  const expressions = formatWords(filterWordsByType(tableRows, "v expr"));
-  const nouns = formatWords(filterWordsByType(tableRows, "n"));
-  const json = {};
-  const verbPhrasal = formatWords(
-    filterWordsByType(tableRows, "vtr phrasal sep")
-  );
-  if (nouns.length) json.nouns = nouns;
-  if (verbPhrasal.length) json.verbPhrasal = verbPhrasal;
-  if (prepositionWords.length) json.prepositions = prepositionWords;
-  if (conjuntionWords.length) json.conjuntion = conjuntionWords;
-  if (adverbWords.length) json.adverb = adverbWords;
-  if (expressions.length) json.expressions = expressions;
-
-  return json;
-};
-
 module.exports = {
   error,
   welcome,
@@ -139,5 +112,4 @@ module.exports = {
   removeTooltip,
   filterWordsByType,
   showTranslationsTable,
-  getTranslationsWords,
 };
