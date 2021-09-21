@@ -58,18 +58,21 @@ const getWordType = (word) => {
 };
 
 const filterWordsByType = (tableRows, wordType) => {
-  const tableRow = tableRows?.filter((row) => getWordType(row) === wordType);
-  return tableRow
+  const tableRow = tableRows?.filter((row) => {
+    return getWordType(row) === wordType;
+  });
+  return tableRow;
 };
 
 const formatTranslateWord = (word) => {
   const translatedWord = removeTooltip(word?.querySelector("td.ToWrd"));
   const contextWord = word
-    .querySelector("td:nth-child(2)")
+    ?.querySelector("td:nth-child(2)")
     ?.textContent?.trim();
   return {
     translate: translatedWord,
     use: contextWord,
+    type: getTooltipTitle(word),
   };
 };
 
@@ -80,30 +83,28 @@ const showTable = (title, data) => {
   }
 };
 
-const showTranslationTable = (title, words) => {
-  const result = [];
-  for (const word of words) {
-    result.push(formatTranslateWord(word));
+const showTranslationsTable = (tableRows, table) => {
+  let currentType;
+  const allWordsTypes = {};
+  const allWords = tableRows?.map(formatTranslateWord);
+
+  for (const word of allWords) {
+    if (!word.type && !word.translate) {
+      const wordType = allWordsTypes[currentType].examples;
+      wordType
+        ? wordType.push(word.use)
+        : (allWordsTypes[currentType].examples = [word.use]);
+    } else if (word.translate !== undefined && word.use !== undefined) {
+      if (word.type) currentType = word.type;
+
+      const wordType = allWordsTypes[currentType];
+      wordType ? wordType.push(word) : (allWordsTypes[currentType] = [word]);
+    }
   }
-  showTable(title, result);
-};
 
-const showTranslationsTable = (tableRows) => {
-  const prepositionWords = filterWordsByType(tableRows, "prep");
-  const conjuntionWords = filterWordsByType(tableRows, "conj");
-  const adverbWords = filterWordsByType(tableRows, "adv");
-  const adjetiveWords = filterWordsByType(tableRows, "adj");
-  const expressions = filterWordsByType(tableRows, "v expr");
-  const nouns = filterWordsByType(tableRows, "n");
-  const verbPhrasal = filterWordsByType(tableRows, "vtr phrasal sep");
-
-  showTranslationTable("Nouns", nouns);
-  showTranslationTable("Verb, Transitive Phrasal Sep", verbPhrasal);
-  showTranslationTable("Prepositions", prepositionWords);
-  showTranslationTable("Adjetives", adjetiveWords);
-  showTranslationTable("Conjuntions", conjuntionWords);
-  showTranslationTable("Adverbs", adverbWords);
-  showTranslationTable("Verbal Expressions", expressions);
+  console.log(allWords);
+  console.log("-".repeat(100));
+  console.log(allWordsTypes);
 };
 
 module.exports = {

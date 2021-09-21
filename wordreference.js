@@ -15,20 +15,17 @@ if (!word) {
 }
 
 const main = async () => {
- 
   spinner.start();
   try {
     const html = await fetchWord(word);
     const dom = new JSDOM(html);
     const table = dom.window.document.querySelector("table.WRD tbody");
-    const tableRows = [
-      ...table.querySelectorAll("tr.even[id], tr.odd[id]"),
-    ];
+    const tableRows = [...table.querySelectorAll("tr.even, tr.odd")];
 
     console.clear();
     welcome(word);
 
-    showTranslationsTable(tableRows);
+    showTranslationsTable(tableRows, table);
   } catch (err) {
     error(err);
   } finally {
