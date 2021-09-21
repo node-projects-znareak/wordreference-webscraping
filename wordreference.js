@@ -15,7 +15,7 @@ if (!word) {
   process.exit(1);
 }
 
-const main = async () => {
+(async () => {
   const searchSpinner = spinner("Searching");
   searchSpinner.start();
   try {
@@ -33,6 +33,4 @@ const main = async () => {
   } finally {
     searchSpinner.stop();
   }
-};
-
-main();
+})();

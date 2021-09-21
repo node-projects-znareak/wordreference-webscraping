@@ -73,21 +73,30 @@ const showTranslationsTable = (tableRows) => {
   let currentType;
   const allWordsTypes = {};
   const allWords = tableRows?.map(formatTranslateWord);
-
+  let newExamples = false;
   for (const word of allWords) {
     if (!word.type && !word.translate) {
+      newExamples = true;
       const wordType = allWordsTypes[currentType].examples;
       wordType
         ? wordType.push(word.use)
         : (allWordsTypes[currentType].examples = [word.use]);
     } else if (word.translate !== undefined && word.use !== undefined) {
+      // add new break line for each group examples
+      // here it use the last
+      const lastExamples = allWordsTypes[currentType]?.examples;
+      const len = lastExamples?.length;
+      if (len && newExamples) {
+        newExamples = false;
+        lastExamples.push("\n");
+      }
       if (word.type) currentType = word.type;
 
       const wordType = allWordsTypes[currentType];
       wordType ? wordType.push(word) : (allWordsTypes[currentType] = [word]);
     }
   }
-
+  console.log(allWords);
   for (const [type, words] of Object.entries(allWordsTypes)) {
     console.log("\n" + chalk.cyanBright.bold(type) + "\n");
     const translations = words
@@ -97,14 +106,7 @@ const showTranslationsTable = (tableRows) => {
 
     console.log(translations);
     console.log("\n" + chalk.magentaBright("Examples: "));
-    console.log(
-      words?.examples
-        ?.map((ex, i) => {
-          if (i % 2 == !0) return ex + "\n";
-          return ex;
-        })
-        ?.join("\n")
-    );
+    console.log(words?.examples?.join("\n"));
     console.log("-".repeat(80));
   }
 
@@ -127,7 +129,6 @@ const createTxtFile = (content, ext = "txt") => {
 
 const generateFileOutput = async (data) => {
   console.log("\n");
-  const processSpinner = spinner("Creating file");
   const answer = await inquirer.prompt([
     {
       type: "list",
@@ -136,7 +137,7 @@ const generateFileOutput = async (data) => {
       choices: ["Anki", "JSON", "TXT", "none"],
     },
   ]);
-  processSpinner.start();
+
   switch (answer.format.toLowerCase()) {
     case "txt":
       createTxtFile(data);
@@ -144,8 +145,6 @@ const generateFileOutput = async (data) => {
       createTxtFile(data, "json");
       break;
   }
-  processSpinner.stop();
-  console.log("\n", chalk.greenBright("The file has been created!"));
 };
 
 module.exports = {
