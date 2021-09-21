@@ -6,6 +6,7 @@ const {
   spinner,
   fetchWord,
   showTranslationsTable,
+  generateFileOutput,
 } = require("./helpers");
 
 const word = process.argv[2];
@@ -15,7 +16,8 @@ if (!word) {
 }
 
 const main = async () => {
-  spinner.start();
+  const searchSpinner = spinner("Searching");
+  searchSpinner.start();
   try {
     const html = await fetchWord(word);
     const dom = new JSDOM(html);
@@ -24,12 +26,12 @@ const main = async () => {
 
     console.clear();
     welcome(word);
-
-    showTranslationsTable(tableRows, table);
+    const data = showTranslationsTable(tableRows, table);
+    generateFileOutput(data);
   } catch (err) {
     error(err);
   } finally {
-    spinner.stop();
+    searchSpinner.stop();
   }
 };
 

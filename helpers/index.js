@@ -1,4 +1,7 @@
 const chalk = require("chalk");
+var uuid = require("uuid");
+const fs = require("fs");
+const inquirer = require("inquirer");
 const figlet = require("figlet");
 const Spinner = require("cli-spinner").Spinner;
 const axios = require("axios").default;
@@ -28,8 +31,8 @@ const welcome = (word) => {
   console.log(`\tPrincipal translations for: ${word}\n`);
 };
 
-const spinner = () => {
-  const _spinner = new Spinner("Searching... %s ");
+const spinner = (txt) => {
+  const _spinner = new Spinner(`${txt}... %s `);
   _spinner.setSpinnerString("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏");
   return _spinner;
 };
@@ -41,42 +44,32 @@ const fetchWord = async (word) => {
 
 const getTooltipTitle = (domNode) => {
   const tooltip = domNode?.querySelector("em.tooltip");
+  const desc = tooltip?.querySelector("span")?.querySelector("i")?.textContent;
   tooltip?.querySelector("a")?.remove();
   tooltip?.querySelector("span")?.remove(); // this is the tooltip description
-  return tooltip?.textContent;
+  return desc ? `${tooltip?.textContent} (${desc})` : tooltip?.textContent;
 };
 
 const removeTooltip = (domNode) => {
   domNode?.querySelector("em")?.remove();
-  domNode?.querySelector("a")?.remove();
+  domNode?.querySelectorAll("a")?.forEach((a) => a?.remove());
   return domNode?.textContent?.trim();
-};
-
-const getWordType = (word) => {
-  const type = getTooltipTitle(word?.querySelector("td.FrWrd"));
-  return type;
-};
-
-const filterWordsByType = (tableRows, wordType) => {
-  const tableRow = tableRows?.filter((row) => {
-    return getWordType(row) === wordType;
-  });
-  return tableRow;
 };
 
 const formatTranslateWord = (word) => {
   const translatedWord = removeTooltip(word?.querySelector("td.ToWrd"));
-  const contextWord = word
-    ?.querySelector("td:nth-child(2)")
-    ?.textContent?.trim();
+  const contextWord = word?.querySelector("td:nth-child(2)");
+  contextWord?.querySelector("span.tooltip")?.remove();
+  const useOrExample = contextWord?.textContent?.trim();
+
   return {
     translate: translatedWord,
-    use: contextWord,
+    use: useOrExample,
     type: getTooltipTitle(word),
   };
 };
 
-const showTranslationsTable = (tableRows, table) => {
+const showTranslationsTable = (tableRows) => {
   let currentType;
   const allWordsTypes = {};
   const allWords = tableRows?.map(formatTranslateWord);
@@ -114,15 +107,53 @@ const showTranslationsTable = (tableRows, table) => {
     );
     console.log("-".repeat(80));
   }
+
+  const arrToNativeObject = Object.entries(allWordsTypes)?.map(
+    ([type, words]) => {
+      return {
+        [type]: {
+          ...words,
+          examples: words.examples,
+        },
+      };
+    }
+  );
+  return arrToNativeObject;
+};
+
+const createTxtFile = (content, ext = "txt") => {
+  fs.writeFileSync(`./${uuid.v1()}.${ext}`, JSON.stringify(content, null, 3));
+};
+
+const generateFileOutput = async (data) => {
+  console.log("\n");
+  const processSpinner = spinner("Creating file");
+  const answer = await inquirer.prompt([
+    {
+      type: "list",
+      name: "format",
+      message: "Choose your format output:",
+      choices: ["Anki", "JSON", "TXT", "none"],
+    },
+  ]);
+  processSpinner.start();
+  switch (answer.format.toLowerCase()) {
+    case "txt":
+      createTxtFile(data);
+    case "json":
+      createTxtFile(data, "json");
+      break;
+  }
+  processSpinner.stop();
+  console.log("\n", chalk.greenBright("The file has been created!"));
 };
 
 module.exports = {
   error,
   welcome,
-  spinner: spinner(),
+  spinner,
   fetchWord,
   getTooltipTitle,
-  removeTooltip,
-  filterWordsByType,
   showTranslationsTable,
+  generateFileOutput,
 };

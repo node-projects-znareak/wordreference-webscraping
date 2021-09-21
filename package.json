@@ -9,8 +9,10 @@
     "chalk": "^4.1.2",
     "cli-spinner": "^0.2.10",
     "figlet": "^1.5.2",
+    "inquirer": "^8.1.5",
     "jsdom": "^17.0.0",
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.12",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {},
   "scripts": {
