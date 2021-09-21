@@ -1,4 +1,12 @@
 const chalk = require("chalk");
+const {
+  selector,
+  removeSelectorNode,
+  removeSelectorNodes,
+  remove,
+  selectorAll,
+  text,
+} = require("./utils");
 var uuid = require("uuid");
 const fs = require("fs");
 const inquirer = require("inquirer");
@@ -43,24 +51,26 @@ const fetchWord = async (word) => {
 };
 
 const getTooltipTitle = (domNode) => {
-  const tooltip = domNode?.querySelector("em.tooltip");
-  const desc = tooltip?.querySelector("span")?.querySelector("i")?.textContent;
-  tooltip?.querySelector("a")?.remove();
-  tooltip?.querySelector("span")?.remove(); // this is the tooltip description
-  return desc ? `${tooltip?.textContent} (${desc})` : tooltip?.textContent;
+  const tooltip = selector(domNode, "em.tooltip");
+  const tooltipDescription = text(selector(selector(tooltip, "span"), "i"));
+  removeSelectorNodes(tooltip, "a", "span"); // this is the tooltip description
+  return tooltipDescription
+    ? `${text(tooltip)} (${tooltipDescription})`
+    : text(tooltip);
 };
 
 const removeTooltip = (domNode) => {
-  domNode?.querySelector("em")?.remove();
-  domNode?.querySelectorAll("a")?.forEach((a) => a?.remove());
-  return domNode?.textContent?.trim();
+  removeSelectorNode(domNode, "em");
+  selectorAll(domNode, "a")?.forEach(remove);
+  return text(domNode)?.trim();
 };
 
 const formatTranslateWord = (word) => {
-  const translatedWord = removeTooltip(word?.querySelector("td.ToWrd"));
-  const contextWord = word?.querySelector("td:nth-child(2)");
-  contextWord?.querySelector("span.tooltip")?.remove();
-  const useOrExample = contextWord?.textContent?.trim();
+  const translatedWord = removeTooltip(selector(word, "td.ToWrd"));
+  const contextWord = selector(word, "td:nth-child(2)");
+  removeSelectorNode(contextWord, "span.tooltip");
+  // this might be an example or the word use in the sentences
+  const useOrExample = text(contextWord)?.trim();
 
   return {
     translate: translatedWord,
@@ -70,34 +80,39 @@ const formatTranslateWord = (word) => {
 };
 
 const showTranslationsTable = (tableRows) => {
-  let currentType;
-  const allWordsTypes = {};
-  const allWords = tableRows?.map(formatTranslateWord);
+  let currentWordType;
+  const allTranslations = {};
+  const allTranslationsHtml = tableRows?.map(formatTranslateWord);
   let newExamples = false;
-  for (const word of allWords) {
+
+  for (const word of allTranslationsHtml) {
     if (!word.type && !word.translate) {
       newExamples = true;
-      const wordType = allWordsTypes[currentType].examples;
-      wordType
-        ? wordType.push(word.use)
-        : (allWordsTypes[currentType].examples = [word.use]);
+      const wordType = allTranslations[currentWordType].examples;
+      if (wordType) {
+        wordType.push(word.use);
+      } else {
+        allTranslations[currentWordType].examples = [word.use];
+      }
     } else if (word.translate !== undefined && word.use !== undefined) {
       // add new break line for each group examples
-      // here it use the last
-      const lastExamples = allWordsTypes[currentType]?.examples;
-      const len = lastExamples?.length;
-      if (len && newExamples) {
+      const lastExamples = allTranslations[currentWordType]?.examples;
+      if (lastExamples?.length && newExamples) {
         newExamples = false;
         lastExamples.push("\n");
       }
-      if (word.type) currentType = word.type;
+      if (word.type) currentWordType = word.type;
 
-      const wordType = allWordsTypes[currentType];
-      wordType ? wordType.push(word) : (allWordsTypes[currentType] = [word]);
+      const wordType = allTranslations[currentWordType];
+      if (wordType) {
+        wordType.push(word);
+      } else {
+        allTranslations[currentWordType] = [word];
+      }
     }
   }
-  console.log(allWords);
-  for (const [type, words] of Object.entries(allWordsTypes)) {
+
+  for (const [type, words] of Object.entries(allTranslations)) {
     console.log("\n" + chalk.cyanBright.bold(type) + "\n");
     const translations = words
       ?.filter((word) => !!word.translate)
@@ -110,7 +125,7 @@ const showTranslationsTable = (tableRows) => {
     console.log("-".repeat(80));
   }
 
-  const arrToNativeObject = Object.entries(allWordsTypes)?.map(
+  const arrToNativeObject = Object.entries(allTranslations)?.map(
     ([type, words]) => {
       return {
         [type]: {
