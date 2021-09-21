@@ -76,13 +76,6 @@ const formatTranslateWord = (word) => {
   };
 };
 
-const showTable = (title, data) => {
-  if (data?.length) {
-    console.log("\n" + chalk.cyanBright.bold(title));
-    console.table(data);
-  }
-};
-
 const showTranslationsTable = (tableRows, table) => {
   let currentType;
   const allWordsTypes = {};
@@ -102,9 +95,25 @@ const showTranslationsTable = (tableRows, table) => {
     }
   }
 
-  console.log(allWords);
-  console.log("-".repeat(100));
-  console.log(allWordsTypes);
+  for (const [type, words] of Object.entries(allWordsTypes)) {
+    console.log("\n" + chalk.cyanBright.bold(type) + "\n");
+    const translations = words
+      ?.filter((word) => !!word.translate)
+      ?.map((word) => chalk.yellowBright(word.translate))
+      ?.join("\n");
+
+    console.log(translations);
+    console.log("\n" + chalk.magentaBright("Examples: "));
+    console.log(
+      words?.examples
+        ?.map((ex, i) => {
+          if (i % 2 == !0) return ex + "\n";
+          return ex;
+        })
+        ?.join("\n")
+    );
+    console.log("-".repeat(80));
+  }
 };
 
 module.exports = {
