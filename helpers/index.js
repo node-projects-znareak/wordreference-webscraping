@@ -9,6 +9,7 @@ const {
 } = require("./utils");
 var uuid = require("uuid");
 const fs = require("fs");
+const AnkiExport = require("anki-apkg-export").default;
 const inquirer = require("inquirer");
 const figlet = require("figlet");
 const Spinner = require("cli-spinner").Spinner;
@@ -138,11 +139,37 @@ const showTranslationsTable = (tableRows) => {
   return arrToNativeObject;
 };
 
+const createAnkiCard = async (word, content) => {
+  console.clear();
+  let finalTranslation = [];
+  //
+  console.log("OBJECT ENTIRES");
+  for (const word of content) {
+    // all diferents words type (nouns, adv, adj, expr, articles)
+    for (const translations of Object.values(word)) {
+      // getTranslationText is the js object { translate, use, type }
+      const getTranslationText = Object.values(translations)
+        .map((t) => t.translate)
+        .filter((e) => !!e); // remove undefined translations
+      finalTranslation.push(...getTranslationText);
+    }
+  }
+  finalTranslation = [...new Set(finalTranslation)];
+  console.log(finalTranslation);
+
+  // anki flashcard creation
+  const apkg = new AnkiExport("Vocabulario Inglés");
+  apkg.addCard(`Traducciones para: ${word}`, finalTranslation.join(", "));
+  const dataBytes = await apkg.save();
+  fs.writeFileSync(`./${uuid.v1()}.apkg`, dataBytes, "binary");
+  console.log(`Anki flashcard created!`);
+};
+
 const createTxtFile = (content, ext = "txt") => {
   fs.writeFileSync(`./${uuid.v1()}.${ext}`, JSON.stringify(content, null, 3));
 };
 
-const generateFileOutput = async (data) => {
+const generateFileOutput = async (word, data) => {
   console.log("\n");
   const answer = await inquirer.prompt([
     {
@@ -154,10 +181,11 @@ const generateFileOutput = async (data) => {
   ]);
 
   switch (answer.format.toLowerCase()) {
-    case "txt":
-      createTxtFile(data);
     case "json":
       createTxtFile(data, "json");
+      break;
+    case "anki":
+      createAnkiCard(word, data);
       break;
   }
 };

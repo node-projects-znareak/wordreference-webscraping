@@ -27,7 +27,7 @@ if (!word) {
     console.clear();
     welcome(word);
     const data = showTranslationsTable(tableRows, table);
-    generateFileOutput(data);
+    generateFileOutput(word, data);
   } catch (err) {
     error(err);
   } finally {
